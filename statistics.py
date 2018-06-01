@@ -1,7 +1,7 @@
 import configs.config as config
+import configs.endpoints as endpoints
 import requests
 from datetime import datetime, timedelta
-import configs.endpoints as endpoints
 
 METERS_PER_KILOMETER = 1000
 ERROR_MSG = 'The server error has occurred.'
@@ -9,8 +9,8 @@ ERROR_MSG = 'The server error has occurred.'
 
 def get_statistics(criteria):
     """
-    Return statistics based on the given criteria.    
-    Criteria can be day, week, month or all.
+    Returns statistics based on the given criteria.    
+    Criteria can be 'day', 'week', 'month' or 'all'.
     """
     return {
         'day': daily,
@@ -21,7 +21,7 @@ def get_statistics(criteria):
 
 
 def daily():
-    """Return statistics for this day"""
+    """Returns statistics for this day"""
     start_date = datetime.today().replace(hour=0, minute=0, second=0)
     end_date = datetime.today()
 
@@ -29,7 +29,7 @@ def daily():
 
 
 def weekly():
-    """Return statistics for this week"""
+    """Returns statistics for this week"""
     start_date = datetime.today().replace(hour=0, minute=0, second=0) - \
         timedelta(days=datetime.today().weekday() - 1)
     end_date = datetime.today()
@@ -38,7 +38,7 @@ def weekly():
 
 
 def monthly():
-    """Return statistics for this month"""
+    """Returns statistics for this month"""
     start_date = datetime.today().replace(day=1, hour=0, minute=0, second=0)
     end_date = datetime.today()
 
@@ -46,10 +46,10 @@ def monthly():
 
 
 def all():
-    """Return all statistics for current athlete"""
-    athlete_id = get_athlete_info()['id']
-
+    """Returns all statistics for current athlete"""
     try:
+        athlete_id = get_athlete_info()['id']
+
         athlete_stat = requests.get(endpoints.ATHLETE_STATISTICS_URL % athlete_id,
                                     {'access_token': config.get_strava_token()}).json()
     except Exception as e:
@@ -77,11 +77,10 @@ def all():
 
 
 def get_athlete_info():
+    """Returns all information about current athlete"""
     try:
         result = requests.get(endpoints.ATHLETE_URL,
                               {'access_token': config.get_strava_token()})
-
-        print(result.json())    
     except Exception as e:
         raise e
     else:
