@@ -47,9 +47,9 @@ def monthly():
 
 def all():
     """Return all statistics for current athlete"""
+    athlete_id = get_athlete_info()['id']
+
     try:
-        athlete_id = requests.get(endpoints.ATHLETE_URL,
-                                  {'access_token': config.get_strava_token()}).json()['id']
         athlete_stat = requests.get(endpoints.ATHLETE_STATISTICS_URL % athlete_id,
                                     {'access_token': config.get_strava_token()}).json()
     except Exception as e:
@@ -60,11 +60,11 @@ def all():
             this_year = athlete_stat['ytd_ride_totals']
             all_time = athlete_stat['all_ride_totals']
 
-            result_str = ("This year:\n"
+            result_str = ("<b>This year:</b>\n"
                           f"Rides: {this_year['count']}\n"
                           f"Distance: {this_year['distance']/METERS_PER_KILOMETER:.1f} km\n"
                           f"Elev Gain: {this_year['elevation_gain']:,d} m\n\n"
-                          "All-Time:\n"
+                          "<b>All-Time:</b>\n"
                           f"Rides: {all_time['count']}\n"
                           f"Distance: {all_time['distance']/METERS_PER_KILOMETER:,.1f} km\n"
                           f"Elev Gain: {all_time['elevation_gain']:,d} m\n"
@@ -74,6 +74,18 @@ def all():
             return ERROR_MSG
         else:
             return result_str
+
+
+def get_athlete_info():
+    try:
+        result = requests.get(endpoints.ATHLETE_URL,
+                              {'access_token': config.get_strava_token()})
+
+        print(result.json())    
+    except Exception as e:
+        raise e
+    else:
+        return result.json()
 
 
 def _request_data(start_date, end_date, criteria):

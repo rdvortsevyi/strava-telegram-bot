@@ -5,17 +5,17 @@ import statistics
 
 
 def start(bot, update):
-    print_keyboard(update.message)
+    show_keyboard(update.message)
 
 
-def print_keyboard(message):
+def show_keyboard(message):
     keyboard = [[InlineKeyboardButton("Day", callback_data='day'),
                  InlineKeyboardButton("Week", callback_data='week'),
                  InlineKeyboardButton("Month", callback_data='month')],
                 [InlineKeyboardButton("All", callback_data='all')]]
     reply_markup = InlineKeyboardMarkup(keyboard)
 
-    message.reply_text('Please choose:', reply_markup=reply_markup)
+    message.reply_text('<b>Please choose:</b>', reply_markup=reply_markup, parse_mode='HTML')
 
 
 def button_handler(bot, update):
@@ -24,9 +24,10 @@ def button_handler(bot, update):
     message = update.callback_query.message
 
     bot.send_message(chat_id=message.chat_id,
-                     text=result)
+                     text=result,
+                     parse_mode='HTML')
 
-    print_keyboard(message)
+    show_keyboard(message)
 
 
 def main():

@@ -2,7 +2,6 @@ import os
 import sys
 sys.path.append(os.getcwd())
 
-
 import unittest
 import configs.config as config
 
