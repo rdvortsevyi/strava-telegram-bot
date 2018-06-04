@@ -1,7 +1,7 @@
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackQueryHandler
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup
 import configs.config as config
-import statistics
+import strava_statistics
 
 
 def start(bot, update):
@@ -19,7 +19,7 @@ def show_keyboard(message):
 
 
 def button_handler(bot, update):
-    result = statistics.get_statistics(update.callback_query.data)
+    result = strava_statistics.get_statistics(update.callback_query.data)
 
     message = update.callback_query.message
 

@@ -62,11 +62,11 @@ def all():
 
             result_str = ("<b>This year:</b>\n"
                           f"Rides: {this_year['count']}\n"
-                          f"Distance: {this_year['distance']/METERS_PER_KILOMETER:.1f} km\n"
+                          f"Distance: {this_year['distance'] / METERS_PER_KILOMETER:.1f} km\n"
                           f"Elev Gain: {this_year['elevation_gain']:,d} m\n\n"
                           "<b>All-Time:</b>\n"
                           f"Rides: {all_time['count']}\n"
-                          f"Distance: {all_time['distance']/METERS_PER_KILOMETER:,.1f} km\n"
+                          f"Distance: {all_time['distance'] / METERS_PER_KILOMETER:,.1f} km\n"
                           f"Elev Gain: {all_time['elevation_gain']:,d} m\n"
                           f"Biggest Ride: {athlete_stat['biggest_ride_distance'] / METERS_PER_KILOMETER:,.1f} km\n")
         except Exception as e:
@@ -108,7 +108,7 @@ def _request_data(start_date, end_date, criteria):
                               f"Rides: {result['activities_count']}\n"
                               f"Distance: {result['distance'] / METERS_PER_KILOMETER:.2f} km\n"
                               f"Elev Gain: {result['total_elevation_gain']:.1f} m\n"
-                              f"Average speed: {result['average_speed']*3.6/result['activities_count']:.1f} km/h")
+                              f"Average speed: {result['average_speed'] * 3.6 / result['activities_count']:.1f} km/h")
             except Exception as e:
                 print(e)
                 return ERROR_MSG
