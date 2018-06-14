@@ -4,7 +4,9 @@ sys.path.append(os.getcwd())
 
 import strava_statistics
 from configs import endpoints
+
 import requests
+from datetime import datetime, timedelta
 import unittest
 from unittest import mock
 
@@ -32,6 +34,24 @@ ATHLETE_STAT = {
     'biggest_ride_distance': 150000
 }
 
+ATHLETE_ACTIVITIES = [
+    {
+        'distance': 24585,
+        'total_elevation_gain': 475,
+        'average_speed': 8
+    },
+    {
+        'distance': 74562,
+        'total_elevation_gain': 856,
+        'average_speed': 4
+    },
+    {
+        'distance': 31475,
+        'total_elevation_gain': 345,
+        'average_speed': 5
+    }
+]
+
 
 def mocked_requests_get(*args, **kwargs):
     class MockResponse:
@@ -46,6 +66,8 @@ def mocked_requests_get(*args, **kwargs):
         return MockResponse(TEST_USER, 200)
     elif args[0] == endpoints.ATHLETE_STATISTICS_URL % 12345:
         return MockResponse(ATHLETE_STAT, 200)
+    elif args[0] == endpoints.ATHLETE_ACTIVITIES_URL:
+        return MockResponse(ATHLETE_ACTIVITIES, 200)
 
     return MockResponse(None, 404)
 
@@ -78,6 +100,26 @@ class TestStatistics(unittest.TestCase):
                            f"Biggest Ride: {ATHLETE_STAT['biggest_ride_distance'] / strava_statistics.METERS_PER_KILOMETER:,.1f} km\n")
         self.assertEqual(result, expected_result)
 
+    @mock.patch('requests.get', side_effect=mocked_requests_get)
+    def test_request_data_daily(self, mock_get):
+        result = strava_statistics.daily()
+
+        expected = self.get_expected_result(f'day - {datetime.today():%d %B %Y}')
+        
+        self.assertEqual(result, expected)
+
+    def get_expected_result(self, criteria):
+        expected_dict = {key: sum(item[key] for item in ATHLETE_ACTIVITIES)
+                         for key in ['distance', 'total_elevation_gain', 'average_speed']}
+        expected_dict['activities_count'] = len(ATHLETE_ACTIVITIES)
+
+        result = (f"Statistics for this {criteria}\n"
+                           f"Rides: {expected_dict['activities_count']}\n"
+                           f"Distance: {expected_dict['distance'] / strava_statistics.METERS_PER_KILOMETER:.2f} km\n"
+                           f"Elev Gain: {expected_dict['total_elevation_gain']:.1f} m\n"
+                           f"Average speed: {expected_dict['average_speed'] * 3.6 / expected_dict['activities_count']:.1f} km/h")
+
+        return result
 
 if __name__ == '__main__':
     unittest.main()

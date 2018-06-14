@@ -25,7 +25,7 @@ def daily():
     start_date = datetime.today().replace(hour=0, minute=0, second=0)
     end_date = datetime.today()
 
-    return _request_data(start_date, end_date, f'{start_date:%d %B %Y}')
+    return _request_data(start_date, end_date, f'day - {start_date:%d %B %Y}')
 
 
 def weekly():
@@ -89,19 +89,20 @@ def get_athlete_info():
 
 def _request_data(start_date, end_date, criteria):
     try:
-        activities = requests.get(endpoints.ATHLETE_ACTIVITIES_URL,
-                                  {'access_token': config.get_strava_token(),
-                                   'after': start_date.timestamp(),
-                                   'before': end_date.timestamp()})
+        activities = requests.get(endpoints.ATHLETE_ACTIVITIES_URL, {
+                                      'access_token': config.get_strava_token(),
+                                      'after': start_date.timestamp(),
+                                      'before': end_date.timestamp()
+                                  }).json()
     except Exception as e:
         print(e)
         return ERROR_MSG
     else:
-        if activities.json():
-            result = {key: sum(item[key] for item in activities.json())
+        if activities:
+            result = {key: sum(item[key] for item in activities)
                       for key in ['distance', 'total_elevation_gain', 'average_speed']}
-
-            result['activities_count'] = len(activities.json())
+            
+            result['activities_count'] = len(activities)
 
             try:
                 result_str = (f"Statistics for this {criteria}\n"
